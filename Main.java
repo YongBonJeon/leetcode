@@ -1,13 +1,70 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
-        String[] logs = {"dig1 8 1 5 1","let1 art can","dig2 3 6","let2 own kit dig","let3 art zero"};
-        String[] answers = leetcode937(logs);
 
-        for(String ans : answers)
-            System.out.println(ans);
+    static int left;
+    static int right;
+
+    public static void main(String[] args) {
+        String str = "babad";
+        System.out.println(longestPalindrome(str));
+    }
+
+    public static String longestPalindrome(String s) {
+
+        if(s.length() == 1)
+            return s;
+
+        for(int i = 0 ; i < s.length()-1 ; i++){
+            checkPalindrome(s, i, i+2);
+            checkPalindrome(s, i, i+1);
+        }
+
+        return s.substring(left+1, right);
+    }
+
+    private static void checkPalindrome(String s, int l, int r){
+        System.out.println(l + " " + r);
+        while(l > 0 && r < s.length()-1 && s.charAt(l) == s.charAt(r)){
+            System.out.println(s.charAt(l) + " " + s.charAt(r));
+            l--;
+            r++;
+        }
+        if(right - left < r-l){
+            System.out.println(s.substring(l+1,r));
+            right = r;
+            left = l;
+        }
+    }
+
+    private static List<List<String>> groupAnagrams(String[] strs) {
+        HashMap<String, List<String>> anagramsMap = new HashMap<>();
+        String temp;
+
+        for(String str : strs){
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String key = String.valueOf(chars);
+
+            if(!anagramsMap.containsKey(key))
+                anagramsMap.put(key, new ArrayList<>());
+            anagramsMap.get(key).add(str);
+            //System.out.println(key + " " + str);
+        }
+        return new ArrayList<>(anagramsMap.values());
+    }
+
+    private static String mostCommonWord(String paragraph, String[] banned) {
+        HashSet<String> ban = new HashSet<>(Arrays.asList(banned));
+        Map<String, Integer> countMap = new HashMap<>();
+        String[] words = paragraph.replaceAll("\\W+", " ").toLowerCase().split(" ");
+
+        for (String word : words) {
+            if(!ban.contains(word))
+                countMap.put(word, countMap.getOrDefault(word, 0) + 1);
+        }
+
+        return Collections.max(countMap.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 
     private static String[] leetcode937(String[] logs){
