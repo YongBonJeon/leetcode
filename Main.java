@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -6,8 +7,82 @@ public class Main {
     static int right;
 
     public static void main(String[] args) {
-        String str = "babad";
-        System.out.println(longestPalindrome(str));
+        int[] nums = {-4, -1, -1, 0, 1, 2};
+        threeSum(nums);
+    }
+
+    public static List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        int[] result = new int[];
+        Arrays.sort(nums);
+        System.out.println(Arrays.toString(nums));
+
+        for(int i = 0 ; i < nums.length-2 ; i++){
+            int target = nums[i]*-1;
+            int left = i+1;
+            int right = nums.length-1;
+            int sum;
+
+            while(left < right){
+                sum = nums[left] + nums[right];
+                if(sum > target)
+                    right--;
+                else if(sum < target)
+                    left++;
+                else{
+                    System.out.println(nums[i] + " " + nums[left] + " " + nums[right]);
+                    result.add(Arrays.asList(nums[i],nums[left],nums[right]));
+                    while(left < right && nums[left] == nums[left+1])
+                        left++;
+                    while(left < right && nums[right] == nums[right-1])
+                        right--;
+                    right--;
+                    left++;
+                }
+            }
+
+            while(i < nums.length-1 && nums[i] == nums[i+1])
+                i++;
+        }
+        return result;
+    }
+
+    public static int trap(int[] height) {
+        int temp = height[0];
+        int [] maxL = new int[height.length];
+        int [] maxR = new int[height.length];
+        for(int i = 1 ; i < height.length ; i++){
+            temp = Math.max(temp, height[i-1]);
+            maxL[i] = temp;
+        }
+        temp = height[height.length-1];
+        for(int i = height.length-2 ; i >= 0 ; i--){
+            temp = Math.max(temp, height[i+1]);
+            maxR[i] = temp;
+        }
+        System.out.println(Arrays.toString(maxL));
+        System.out.println(Arrays.toString(maxR));
+
+        int ans = 0;
+        for(int i = 0 ; i < height.length ; i++){
+            ans += Math.max(Math.min(maxL[i], maxR[i])-height[i],0);
+        }
+        return ans;
+    }
+
+    public static int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0 ; i < nums.length ; i++) {
+            map.put(nums[i], i);
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            int temp = target - nums[i];
+            if(map.containsKey(temp) && i != map.get(temp)){
+                return new int[]{i, map.get(temp)};
+            }
+        }
+        return null;
     }
 
     public static String longestPalindrome(String s) {
