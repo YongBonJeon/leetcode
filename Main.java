@@ -6,14 +6,108 @@ public class Main {
     static int left;
     static int right;
 
+    public class ListNode {
+        int val;
+        ListNode next;ListNode() {}
+        ListNode(int val) { this.val = val; }
+        ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+    }
+
     public static void main(String[] args) {
         int[] nums = {-4, -1, -1, 0, 1, 2};
         threeSum(nums);
     }
 
+    public ListNode swapPairs(ListNode head) {
+        ListNode cur = head;
+        ListNode next;
+
+        while(cur != null && cur.next != null){
+            next = cur.next;
+            cur.next = next.next;
+            next.next = cur;
+
+            cur = cur.next.next;
+        }
+
+        return head;
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode result = new ListNode();
+
+        while (l1 != null && l2 != null) {
+            result.next = new ListNode(l1.val + l2.val);
+        }
+
+        return result.next;
+    }
+
+    public ListNode reverseList(ListNode head) {
+        Deque<Integer> deque = new LinkedList<>();
+
+        while (head != null) {
+            deque.add(head.val);
+            head = head.next;
+        }
+
+        ListNode result = new ListNode();
+        ListNode cur = result;
+
+        while (!deque.isEmpty()) {
+            cur.next = new ListNode(deque.pollLast());
+            cur = cur.next;
+        }
+
+        return result.next;
+    }
+
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode result = new ListNode();
+        ListNode cur = result;
+
+        while(list1 != null && list2 != null){
+            if(list1.val <= list2.val) {
+                cur.next = new ListNode(list1.val);
+                list1 = list1.next;
+                cur = cur.next;
+            }
+            else {
+                cur.next = new ListNode(list2.val);
+                list2 = list2.next;
+                cur = cur.next;
+            }
+        }
+        while(list1 != null){
+            cur.next = new ListNode(list1.val);
+            list1 = list1.next;
+            cur = cur.next;
+        }
+        while(list2 != null){
+            cur.next = new ListNode(list2.val);
+            list2 = list2.next;
+            cur = cur.next;
+        }
+        return result;
+    }
+    public boolean isPalindrome(ListNode head) {
+        Deque<Integer> deque = new LinkedList<>();
+
+        ListNode node = head;
+        while (node != null) {
+            deque.add(node.val);
+            node = node.next;
+        }
+
+        while(!deque.isEmpty() && deque.size() > 1) {
+            if(deque.pollFirst() != deque.pollLast())
+                return false;
+        }
+        return true;
+    }
+
     public static List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
-        int[] result = new int[];
         Arrays.sort(nums);
         System.out.println(Arrays.toString(nums));
 
