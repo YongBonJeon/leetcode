@@ -14,8 +14,102 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        int[] nums = {-4, -1, -1, 0, 1, 2};
-        threeSum(nums);
+        String s = "dbacdcbc";
+        System.out.println(removeDuplicateLetters(s));
+    }
+
+    public int[] dailyTemperatures(int[] temperatures) {
+        Deque<Integer> stack = new ArrayDeque<>();
+
+        int[] result = new int[temperatures.length];
+
+        for (int i = 0 ; i < temperatures.length ; i++) {
+            int cnt = 1;
+            while (stack.peek() < temperatures[i]) {
+                int last = stack.pop();
+                result[last] = i - last;
+            }
+            stack.push(i);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        int[] ints = new int[5];
+        return null;
+
+
+
+
+    }
+
+    public static String removeDuplicateLetters(String s) {
+        Map<Character, Integer> counter = new HashMap<>();
+        Map<Character, Boolean> checker = new HashMap<>();
+
+        Deque<Character> stack = new ArrayDeque<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            Character c = s.charAt(i);
+            counter.put(c, counter.get(c) == null ? 1 : counter.get(c) + 1);
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            Character c = s.charAt(i);
+
+            if (stack.isEmpty()) {
+                stack.push(c);
+                //System.out.println("push " + c);
+                checker.put(c, true);
+                continue;
+            }
+
+            if (checker.get(c) != null && checker.get(c) == true) {
+                counter.put(c, counter.get(c) - 1);
+                continue;
+            }
+
+            while (!stack.isEmpty() && c < stack.peek() && counter.get(stack.peek()) > 1) {
+                counter.put(stack.peek(), counter.get(stack.peek()) - 1);
+                checker.put(stack.peek(), false);
+                stack.pop();
+                //System.out.println("pop " + stack.pop());
+
+            }
+            stack.push(c);
+            //System.out.println("push " + c);
+            checker.put(c, true);
+        }
+
+        String ans = "";
+        while (!stack.isEmpty()) {
+            ans += stack.pop();
+        }
+        return new StringBuilder(ans).reverse().toString();
+    }
+
+    public boolean isValid(String s) {
+        Deque<Character> stack = new ArrayDeque<>();
+
+        Map<Character, Character> map = new HashMap<>();
+
+        map.put(']','[');
+        map.put('}','{');
+        map.put(')','(');
+
+        for(int i = 0 ; i < s.length() ; i++){
+            Character c = s.charAt(i);
+            if(c == '{' || c == '(' ||  c == '['){
+                stack.push(c);
+            }
+            else{
+                if(stack.isEmpty())
+                    return false;
+                if(map.get(stack.peekLast()) == stack.peekLast()){
+                    stack.pop();
+                }
+                else
+                    return false;
+            }
+        }
+        return true;
     }
 
     public ListNode swapPairs(ListNode head) {
