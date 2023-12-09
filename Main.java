@@ -16,7 +16,225 @@ public class Main {
     public static void main(String[] args) {
         String s = "dbacdcbc";
         System.out.println(removeDuplicateLetters(s));
+        Map<Character, Integer> map = new HashMap<>();
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>();
+
+        for (Map.Entry<Character, Integer> e : map.entrySet()) {
+
+        }
     }
+
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        Map<Integer, List<Integer>> finishToTakeMap = new HashMap<>();
+
+        for (int[] pre : prerequisites) {
+            if (finishToTakeMap.get(pre[0]) == null) {
+                finishToTakeMap.put(pre[0], new ArrayList<>());
+            }
+            finishToTakeMap.get(pre[0]).add(pre[1]);
+        }
+
+        for (Integer finish : finishToTakeMap.keySet()) {
+            gogo(finishToTakeMap, finish, new ArrayList<Integer>(), new ArrayList<Integer>())
+        }
+    }
+
+    private Boolean gogo(Map<Integer, List<Integer>> finishToTakeMap, Integer finish
+            , List<Integer> takes, List<Integer> visited) {
+
+        if(takes.contains(finish))
+            return false;
+
+        if(visited.contains(finish))
+            return true;
+
+        if (finishToTakeMap.get(finish) != null) {
+            takes.add(finish);
+            for (Integer take : finishToTakeMap.get(finish)) {
+                if(!gogo(finishToTakeMap, take, takes, visited))
+                    return false;
+            }
+            takes.remove(finish);
+            visited.add(finish);
+        }
+        return true;
+    }
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        Map<String, PriorityQueue<String>> fromToMap = new HashMap<>();
+
+        for (List<String> ticket : tickets) {
+            fromToMap.put(ticket.get(0), new PriorityQueue<>());
+            fromToMap.get(ticket.get(0)).add(ticket.get(1));
+        }
+
+        List<String> result = new ArrayList<>();
+
+        go("JFK", fromToMap, result);
+
+        result.toArray()
+    }
+
+    private void go(String cur, Map<String, PriorityQueue<String>> fromToMap, List<String> result) {
+        result.add(cur);
+        String next = fromToMap.get(cur).poll();
+        go(next, fromToMap, result);
+    }
+
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> cur = new ArrayList<>();
+        backtracking_subset(0, nums, cur, result);
+
+        return result;
+    }
+
+    private void backtracking_subset(int start, int[] nums, List<Integer> cur, List<List<Integer>> result) {
+        result.add(cur);
+
+        for (int i = start; i < nums.length; i++) {
+            List<Integer> next = new ArrayList<>(cur);
+            next.add(nums[i]);
+            backtracking_combinationSum(i+1, numss, next, result);
+        }
+    }
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> cur = new ArrayList<>();
+        backtracking_combinationSum(0, target, candidates, cur, result);
+
+        return result;
+    }
+
+    private void backtracking_combinationSum(int start, int target, int[] candidates, List<Integer> cur, List<List<Integer>> result) {
+        int sum = cur.stream().mapToInt(i -> i).sum();
+        if(sum == target)
+            result.add(cur);
+
+        for (int i = start; i < candidates.length; i++) {
+            List<Integer> next = new ArrayList<>(cur);
+            next.add(candidates[i]);
+            backtracking_combinationSum(i, target, candidates, next, result);
+        }
+    }
+
+    public List<List<Integer>> combine(int n, int k) {
+
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> cur = new ArrayList<>();
+        combination_dfs(0, n, k, cur, result);
+    }
+
+    private void combination_dfs(int num, int n, int k, List<Integer> cur, List<List<Integer>> result) {
+
+        if (num == k) {
+            result.add(cur);
+            return ;
+        }
+
+        for (int i = 1; i <= n; i++) {
+            if (!cur.contains(i)) {
+                List<Integer> next = new ArrayList<>(cur);
+                next.add(i);
+                combination_dfs(num + 1, n, k, next, result);
+            }
+        }
+    }
+
+    public List<List<Integer>> permute(int[] nums) {
+
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+
+        permutation_dfs(nums, path,  result);
+
+    }
+
+    private void permutation_dfs(int[] nums, List<Integer> path, List<List<Integer>> result) {
+        if (nums.length == path.size()) {
+            result.add(path);
+            return ;
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            if (!path.contains(nums[i])) {
+                path.add(nums[i]);
+                permutation_dfs(nums, path, result);
+                path.remove(nums[i]);
+            }
+        }
+    }
+
+    Map<Integer, List<Character>> map = new HashMap<>();
+
+    public List<String> letterCombinations(String digits) {
+        map.put(2, Arrays.asList('a', 'b', 'c'));
+        map.put(3, Arrays.asList('d', 'e', 'f'));
+        map.put(4, Arrays.asList('g', 'h', 'i'));
+        map.put(5, Arrays.asList('j', 'k', 'l'));
+        map.put(6, Arrays.asList('m', 'n', 'o'));
+        map.put(7, Arrays.asList('p', 'q', 'r', 's'));
+        map.put(8, Arrays.asList('t', 'u', 'v'));
+        map.put(9, Arrays.asList('w', 'x', 'y', 'z'));
+
+
+        backtracking(0, digits, new StringBuilder());
+
+    }
+
+    private void backtracking(int index, String digits, StringBuilder path) {
+
+        if (path.length() == digits.length()) {
+            String.valueOf(path);
+            System.out.println(path);
+            return ;
+        }
+
+        for (Character c : map.get(index)) {
+            backtracking(index+1, digits, new StringBuilder(path).append(c));
+        }
+    }
+
+    int[][] dir = {{0,1}, {0,-1}, {1, 0}, {-1,0}};
+
+    public int numIslands(char[][] grid) {
+        Boolean[][] used = new Boolean[grid.length][grid[0].length];
+        for (Boolean[] booleans : used) {
+            for (Boolean aBoolean : booleans) {
+                aBoolean = false;
+            }
+        }
+
+        int ans = 0;
+
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (!used[i][j]) {
+                    dfs(i, j, used);
+                    ans++;
+                }
+            }
+        }
+        return ans;
+    }
+
+    private void dfs(int i, int j, Boolean[][] used) {
+        // 방문
+        used[i][j] = true;
+
+        for (int d = 0; d < 4; d++) {
+            int nexti = i + dir[d][0];
+            int nextj = j + dir[d][1];
+
+            if (!used[nexti][nextj]) {
+                dfs(nexti, nextj, used);
+            }
+        }
+    }
+
 
     public int solution(int[] scoville, int K) {
         int answer = 0;
