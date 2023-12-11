@@ -25,6 +25,118 @@ public class Main {
         }
     }
 
+    public int solution(int[][] maps) {
+        int answer = 0;
+        int n = maps.length;
+        int m = maps[0].length;
+        int[][] dist = new int[n][m];
+
+        Arrays.fill(dist, 0);
+
+        PriorityQueue<List<Integer>> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.get(2)));
+
+        pq.add(Arrays.asList(0,0,0));
+
+        while (!pq.isEmpty()) {
+            List<Integer> cur = pq.poll();
+
+            int i = cur.get(0);
+            int j = cur.get(1);
+            int cur_dist = cur.get(2);
+
+            if (i == n - 1 && j == m - 1) {
+                return cur_dist;
+            }
+
+            for (int d = 0; d < 4; d++) {
+                int nexti = i + dir[d][0];
+                int nextj = j + dir[d][1];
+
+                if(nexti < 0 || nextj < 0 || nexti >= n || nextj >= m)
+                    continue;
+
+                pq.add(Arrays.asList(nexti, nextj, cur_dist + 1));
+            }
+        }
+
+        return -1;
+    }
+
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+
+        for (int[] flight : flights) {
+            graph.putIfAbsent(flight[0], new HashMap<>());
+            graph.get(flight[0]).put(flight[1], flight[2]);
+        }
+
+        Map<Integer, Integer> visited = new HashMap<>();
+
+        PriorityQueue<List<Integer>> pq
+                = new PriorityQueue<>(Comparator.comparingInt(a -> a.get(1)));
+        pq.add(Arrays.asList(src, 0, 0));
+
+        while (!pq.isEmpty()) {
+            List<Integer> cur = pq.poll();
+
+            int u = cur.get(0);
+            int distU = cur.get(1);
+            int k_visited = cur.get(2);
+
+            if (u == dst) {
+                return distU;
+            }
+
+            visited.put(u, k_visited);
+
+            if (!graph.containsKey(u)) {
+                if (k_visited + 1 <= k) {
+                    for (Map.Entry<Integer, Integer> v : graph.get(u).entrySet()) {
+                        if(!visited.containsKey(v.getKey()) || k_visited + 1 < visited.get(v.getKey()))
+                            pq.add(Arrays.asList(v.getKey(), v.getValue() + distU, k_visited + 1));
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int networkDelayTime(int[][] times, int n, int k) {
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+
+        for (int[] time : times) {
+            graph.putIfAbsent(time[0], new HashMap<>());
+            graph.get(time[0]).put(time[1], time[2]);
+        }
+
+        Map<Integer, Integer> distance = new HashMap<>();
+        PriorityQueue<Map.Entry<Integer, Integer>> pq
+                = new PriorityQueue<>(Map.Entry.comparingByValue());
+        pq.add(new AbstractMap.SimpleEntry<>(k, 0));
+
+        while (!pq.isEmpty()) {
+            Map.Entry<Integer, Integer> cur = pq.poll();
+
+            int u = cur.getKey();
+            int distU = cur.getValue();
+
+            if (!distance.containsKey(u)) {
+                distance.put(u, distU);
+
+                if (graph.containsKey(u)) {
+                    for (Map.Entry<Integer, Integer> v : graph.get(u).entrySet()) {
+                        pq.add(new AbstractMap.SimpleEntry<>(v.getKey(), v.getValue() + distU));
+                    }
+                }
+            }
+        }
+
+        if (distance.size() == n) {
+            return Collections.max(distance.values());
+        } else
+            return -1;
+    }
+
     public boolean canFinish(int numCourses, int[][] prerequisites) {
         Map<Integer, List<Integer>> finishToTakeMap = new HashMap<>();
 
