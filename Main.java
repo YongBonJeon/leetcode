@@ -422,6 +422,80 @@ public class Main {
         return root.next;
     }
 
+    public int solution(int[] scoville, int K) {
+        int answer = 0;
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        for (int i : scoville) {
+            pq.add(i);
+        }
+
+        while (pq.size() >= 1 && pq.peek() < K) {
+            int f1 = pq.poll();
+            int f2 = pq.poll();
+
+            pq.add(f1+f2*2);
+            answer++;
+        }
+
+        return answer;
+    }
+
+    public int[][] kClosest(int[][] points, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> {
+            Integer ed1 = o1[0]*o1[0]+o1[1]*o1[1];
+            Integer ed2 = o2[0]*o2[0]+o2[1]*o2[1];
+
+            if(ed1 == ed2)
+                return 0;
+            else if(ed1 > ed2)
+                return 1;
+            else
+                return -1;
+        });
+
+        for (int[] point : points) {
+            pq.add(point);
+        }
+
+        int[][] ans = new int[k][2];
+
+        for (int i = 0; i < k; i++) {
+            ans[k] = pq.poll();
+        }
+
+        return ans;
+    }
+
+    public ListNode mergeKLists(ListNode[] lists) {
+        PriorityQueue<ListNode> pq = new PriorityQueue<>((o1, o2) -> {
+            if(o1.val == o2.val)
+                return 0;
+            else if(o1.val > o2.val)
+                return 1;
+            else
+                return -1;
+        });
+
+        for (ListNode list : lists) {
+            pq.add(list);
+        }
+
+        ListNode root = new ListNode();
+        ListNode cur = root;
+
+        while (!pq.isEmpty()) {
+            ListNode temp = pq.poll();
+            while (temp != null) {
+                cur.next = temp;
+                temp = temp.next;
+                cur = cur.next;
+            }
+        }
+        return root.next;
+    }
+
     public int[] dailyTemperatures(int[] temperatures) {
         Deque<Integer> stack = new ArrayDeque<>();
 
