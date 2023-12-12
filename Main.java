@@ -13,6 +13,18 @@ public class Main {
         ListNode(int val, ListNode next) { this.val = val; this.next = next; }
     }
 
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode() {}TreeNode(int val) { this.val = val; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
     public static void main(String[] args) {
         String s = "dbacdcbc";
         System.out.println(removeDuplicateLetters(s));
@@ -23,6 +35,158 @@ public class Main {
         for (Map.Entry<Character, Integer> e : map.entrySet()) {
 
         }
+    }
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(root == null) return null;
+
+        StringBuilder sb = new StringBuilder();
+        Queue<TreeNode> q = new LinkedList<>();
+
+        q.add(root);
+        sb.append("#,");
+        sb.append(root.val);
+
+        while (!q.isEmpty()) {
+            TreeNode cur = q.poll();
+
+            if (cur.left != null) {
+                q.add(cur.left);
+                sb.append("," + cur.left.val);
+            } else
+                sb.append("," + "#");
+            if (cur.right != null) {
+                q.add(cur.right);
+                sb.append("," + cur.right.val);
+            } else
+                sb.append("," + "#");
+        }
+        System.out.println(sb.toString());
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(data.equals("")) return null;
+
+        String[] nodes = data.split(",");
+
+        Queue<TreeNode> q = new LinkedList<>();
+        TreeNode root = new TreeNode(Integer.parseInt(nodes[0]));
+        q.add(root);
+
+        int idx = 2;
+        while (!q.isEmpty()) {
+            TreeNode cur = q.poll();
+
+            if (nodes[idx].equals("#")) {
+                cur.left = new TreeNode(Integer.parseInt(nodes[idx]));
+                q.add(cur.left);
+            }
+
+            idx++;
+            if (nodes[idx].equals("#")) {
+                cur.right = new TreeNode(Integer.parseInt(nodes[idx]));
+                q.add(cur.right);
+            }
+
+            idx++;
+        }
+        return root;
+    }
+
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        TreeNode result = new TreeNode();
+        return dfs3(root1, root2);
+    }
+
+    private TreeNode dfs3(TreeNode root1, TreeNode root2) {
+        if(root1 == null) return root2;
+        if(root2 == null) return root1;
+
+        TreeNode node = null;
+
+        node.left = dfs3(root1.left, root2.left);
+        node.right = dfs3(root1.right, root2.right);
+
+        node.val = root1.val + root2.val;
+
+        return node;
+
+    }
+
+    int result = 0;
+
+    public int longestUnivaluePath(TreeNode root) {
+        dfs2(root);
+    }
+
+    private int dfs2(TreeNode node) {
+
+        if(node == null)
+            return 0;
+
+        int left = dfs2(node.left);
+        int right = dfs2(node.right);
+
+        if (node.left != null && node.left.val == node.val) {
+            left += 1;
+        } else
+            left = 0;
+
+        if (node.right != null && node.right.val == node.val) {
+            right += 1;
+        } else
+            right = 0;
+
+        result = Math.max(result, left + right);
+
+        return Math.max(left, right);
+    }
+
+    int longest = 0;
+    public int diameterOfBinaryTree(TreeNode root) {
+        dfs1(root);
+        return longest;
+    }
+
+    private int dfs1(TreeNode node) {
+
+        if(node == null)
+            return -1;
+
+        int left = dfs1(node.left);
+        int right = dfs1(node.right);
+
+        longest = Math.max(longest, left + right + 2);
+
+        return Math.max(left,right) + 1;
+    }
+
+    public int maxDepth(TreeNode root) {
+        int depth = 0;
+        if(root == null)
+            return 0;
+
+        Queue<TreeNode> q = new ArrayDeque<>();
+        q.add(root);
+
+        while (!q.isEmpty()) {
+            depth += 1;
+            int q_size = q.size();
+
+            for (int i = 0; i < q_size; i++) {
+                TreeNode cur = q.poll();
+                if (cur.left != null) {
+                    q.add(cur.left);
+                }
+                if (cur.right != null) {
+                    q.add(cur.right);
+                }
+            }
+        }
+        return depth;
     }
 
     public int solution(int[][] maps) {
