@@ -35,6 +35,195 @@ public class Main {
         for (Map.Entry<Character, Integer> e : map.entrySet()) {
 
         }
+        List<Integer> result = new ArrayList<>();
+
+        int[] ints = new int[];
+        Arrays.stream(ints).max().getAsInt();
+    }
+
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int row = 0;
+        int col = matrix[0].length-1;
+
+        while (matrix[row][col] != target) {
+            if (matrix[row][col] > target) {
+                col--;
+            } else if (matrix[row][col] < target) {
+                row++;
+            }
+            if (row < 0 || col < 0 || row >= matrix.length || col >= matrix[0].length) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> result = new HashSet<>()
+
+        for(int n : nums1) {
+            int k;
+            if(Arrays.binarySearch(nums2, n) != -1)
+                result.add(n);
+        }
+        Integer[] ans = result.toArray(new Integer[0]);
+
+        return Arrays.stream(ans).mapToInt(i -> i).toArray();
+    }
+
+    public int search1(int[] nums, int target) {
+        int max_index = 0, max_value = nums[0];
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > max_value) {
+                max_index = i;
+                max_value = nums[i];
+            }
+        }
+        if (target <= max_value) {
+            return binarySearch(nums, 0, max_index, target);
+        } else {
+            return binarySearch(nums, max_index + 1, nums.length - 1, target);
+        }
+    }
+
+    public int search(int[] nums, int target) {
+        return binarySearch(nums, 0, nums.length, target);
+    }
+
+    private int binarySearch(int[] nums, int l, int r, int target) {
+        int mid = (l + r) / 2;
+        if(nums[mid] == target)
+            return mid;
+
+        if(nums[mid] > target)
+            return binarySearch(nums, mid+1, r, target);
+        else
+            return binarySearch(nums, l, mid - 1, target);
+    }
+
+    public boolean isAnagram(String s, String t) {
+        char[] tArr = t.toCharArray();
+        tArr.toString();
+        Arrays.sort(tArr);
+        return s.equals(t);
+    }
+
+    public String largestNumber(int[] nums) {
+        Integer[] arr = Arrays.stream(nums).boxed().toArray(Integer[]::new);
+        Arrays.sort(arr, (o1, o2) -> (String.valueOf(o1) + o2).compareTo(String.valueOf(o2) + o1));
+
+        StringBuilder s = new StringBuilder();
+        for(Integer i : arr)
+            s.append(i);
+        return String.valueOf(Long.parseLong(s.toString()));
+
+
+    }
+
+    public int[] solution(String[] operations) {
+        int[] answer = {};
+
+        Queue<Integer> minHeap = new PriorityQueue<>();
+        Queue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+
+        for (String operation : operations) {
+            String[] op = operation.split(" ");
+
+            if (op[0].equals("I")) {
+                maxHeap.add(Integer.valueOf(op[1]));
+                minHeap.add(Integer.valueOf(op[1]));
+            } else if (op[0].equals("D")) {
+                if(minHeap.isEmpty()) continue;
+                if (op[1].equals("-1")) {
+                    maxHeap.remove(minHeap.poll());
+                } else {
+                    minHeap.remove(maxHeap.poll());
+                }
+            }
+        }
+        if(minHeap.isEmpty())
+            return new int[]{0,0};
+        else if(minHeap.size() == 1)
+            return new int[]{minHeap.peek(), minHeap.peek()};
+        return new int[]{maxHeap.poll(), minHeap.peek()};
+    }
+
+    public int findKthLargest(int[] nums, int k) {
+        Arrays.sort(nums);
+        return nums[k-1];
+    }
+
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if(nums.length == 0) return null;
+        return construct(nums, 0, nums.length-1);
+    }
+
+    private TreeNode construct(int[] nums, int l, int r) {
+        if(l > r) return null;
+
+        int mid = (l+r)/2;
+
+        TreeNode node = new TreeNode(nums[mid]);
+
+        node.left = construct(nums, l, mid - 1);
+        node.right = construct(nums, mid + 1, r);
+
+        return node;
+    }
+
+    public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+
+        for (int[] edge : edges) {
+            graph.putIfAbsent(edge[0], new ArrayList<>());
+            graph.get(edge[0]).add(edge[1]);
+
+            graph.putIfAbsent(edge[1], new ArrayList<>());
+            graph.get(edge[1]).add(edge[0]);
+        }
+
+        List<Integer> leaves = new ArrayList<>();
+
+        List<Integer> temp = new ArrayList<>();
+        while(leaves.size() < n) {
+            temp = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                // leaf 노드
+                if (graph.get(i).size() == 1) {
+                    temp.add(i);
+                }
+            }
+
+            for (Integer leaf : temp) {
+                int v = graph.get(leaf).get(0);
+                graph.get(v).remove(Integer.valueOf(leaf));
+                graph.get(leaf).remove(Integer.valueOf(v));
+            }
+            leaves.addAll(temp);
+        }
+
+        for (int i = 0; i < n; i++) {
+            System.out.println(graph.get(i).size());
+        }
+        return temp;
+    }
+}
+
+    public boolean isBalanced(TreeNode root) {
+        return dfs4(root) != -1 ? true : false;
+    }
+
+    private int dfs4(TreeNode node) {
+        if(node == null) return 0;
+
+        int left = dfs4(node.left);
+        int right = dfs4(node.right);
+
+        if (Math.abs(left - right) > 1 || left == -1 || right == -1) {
+            return -1;
+        }
+
+        return Math.max(left, right) + 1;
     }
 
     // Encodes a tree to a single string.
