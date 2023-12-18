@@ -41,6 +41,302 @@ public class Main {
         Arrays.stream(ints).max().getAsInt();
     }
 
+    public int rob(int[] nums) {
+        int[] dp = new int[nums.length + 1];
+
+        dp[0] = nums[0];
+        dp[1] = nums[1];
+
+        for (int i = 2; i < nums.length; i++) {
+            dp[i] = Math.max(dp[i-1], dp[i-2]) + nums[i];
+        }
+        return Math.max(dp[nums.length], dp[nums.length - 1]);
+    }
+
+    public int climbStairs(int n) {
+        int[] dp = new int[n+2];
+
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for (int i = 2; i <= n; i++) {
+            dp[i] = dp[i-1] + dp[i-2];
+        }
+
+        return dp[n];
+
+    }
+
+    public int maxSubArray(int[] nums) {
+        int maxSum = Integer.MIN_VALUE;
+
+        int localSum = 0;
+        for (int num : nums) {
+            localSum += num;
+
+            if(localSum < 0)
+                localSum = 0;
+
+            maxSum = Math.max(maxSum, localSum);
+        }
+        return maxSum;
+    }
+
+    public int fib(int n) {
+        int[] dp = new int[31];
+        dp[0] = 0;
+        dp[1] = 1;
+
+        for (int i = 2; i <= n; i++) {
+            dp[n] = dp[i-1] + dp[i-2];
+        }
+        return dp[n];
+    }
+
+    public List<Integer> diffWaysToCompute(String expression) {
+
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < expression.length(); i++) {
+
+            char c = expression.charAt(i);
+
+            if(c == '+' || c == '-' || c == '*') {
+                List<Integer> left = diffWaysToCompute(expression.substring(0, i));
+                List<Integer> right = diffWaysToCompute(expression.substring(i + 1));
+
+                for (Integer l : left) {
+                    for (Integer r : right) {
+                        if(c == '+')
+                            result.add(l + r);
+                        else if(c == '-')
+                            result.add(l - r);
+                        else if(c == '*')
+                            result.add(l * r);
+                    }
+                }
+            }
+        }
+        if(result.isEmpty())
+            result.add(Integer.parseInt(expression));
+
+        return result;
+    }
+
+    public int majorityElement(int[] nums) {
+        Map<Integer, Integer> count = new HashMap<>();
+
+        for (int num : nums) {
+            count.put(num, count.getOrDefault(num, 0) + 1);
+        }
+
+        Integer maxValue = count.values().stream().max(Integer::compareTo).orElse(0);
+
+        if (maxValue > nums.length / 2) {
+            for (Integer key : count.keySet()) {
+                if (count.get(key) == maxValue) {
+                    return key;
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int findContentChildren(int[] g, int[] s) {
+        Arrays.sort(g);
+        Arrays.sort(s);
+
+        int ans = 0;
+        // 7 8 9 10
+        // 5 6 7 8
+        int child = 0, cookie = 0;
+        while (child < g.length && cookie < s.length) {
+            if (g[child] <= s[cookie]) {
+                child++;
+                cookie++;
+                ans++;
+            } else {
+                cookie++;
+            }
+        }
+        return ans;
+    }
+
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        if(Arrays.stream(gas).sum() < Arrays.stream(cost).sum())
+            return -1;
+
+        int fuel = 0, start = 0;
+        for (int i = 0; i < gas.length; i++) {
+            if (fuel + gas[i] - cost[i] < 0) {
+                start = i + 1;
+                fuel = 0;
+            } else {
+                fuel += gas[i] - cost[i];
+            }
+        }
+        return start;
+    }
+
+    public int leastInterval(char[] tasks, int n) {
+        int[] nums = new int[26];
+        int maxIdx = 0, maxValue = 0;
+        for (char task : tasks) {
+            nums[task-'A']++;
+            if (nums[task - 'A'] > maxValue) {
+                maxValue = nums[task-'A'];
+                maxIdx = task-'A';
+            }
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
+
+        for (int i = 0; i < 26; i++) {
+            if (nums[i] > 0 && i != maxIdx) {
+                pq.add(nums[i]);
+            }
+        }
+
+        int idle = (maxValue - 1) * n;
+
+        while (!pq.isEmpty() && idle > 0) {
+            idle -= Math.min(pq.poll(), maxValue - 1);
+        }
+
+        if(idle > 0)
+            return idle + tasks.length;
+        else
+            return tasks.length;
+    }
+
+    public int[][] reconstructQueue(int[][] people) {
+        Queue<int[]> pq = new PriorityQueue<>((o1, o2) ->
+                o1[0] != o2[0] ? o2[0] - o1[0] : o1[1] - o2[1]);
+        for (int[] person : people) {
+            pq.add(person);
+        }
+
+        List<int[]> result = new ArrayList<>();
+        while (!pq.isEmpty()) {
+            int[] person = pq.poll();
+            result.add(person[1], person);
+        }
+        return result.toArray(new int[result.size()][2]);
+    }
+
+    public int maxProfit(int[] prices) {
+        int maxProfit = 0;
+        for (int i = 0; i < prices.length-1; i++) {
+            if(prices[i+1] - prices[i] > 0)
+                maxProfit += prices[i+1] - prices[i];
+        }
+        return maxProfit;
+    }
+
+    public int characterReplacement(String s, int k) {
+        Map<Character, Integer> count = new HashMap<>();
+
+        int left = 0, right = 0;
+        int maxCount = 0;
+
+        for(right = 1 ; right <= s.length() ; right++){
+            count.put(s.charAt(right-1), count.getOrDefault(s.charAt(right-1), 0) + 1);
+            maxCount = Collections.max(count.values());
+
+            if (right - left - maxCount > k) {
+                count.put(s.charAt(left), count.getOrDefault(s.charAt(left), 0) - 1);
+                left++;
+            }
+        }
+        return s.length() - left;
+    }
+
+    public String minWindow(String s, String t) {
+        Map<Character, Integer> need = new HashMap<>();
+        int total_need = t.length();
+        for (char c : t.toCharArray()) {
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+
+        int left = 0, right = 0, start = 0, end = 0;
+        int minLength = Integer.MAX_VALUE;
+
+        for (char c : s.toCharArray()) {
+            right++;
+
+            if (need.containsKey(c) && need.get(c) > 0) {
+                total_need--;
+            }
+
+            need.put(c, need.getOrDefault(c, 0) - 1);
+
+            if (total_need == 0) {
+                while (left < right && need.get(s.charAt(left)) < 0) {
+                    need.put(s.charAt(left), need.get(s.charAt(left)) + 1);
+                    left++;
+                }
+
+                if (minLength > right - left + 1) {
+                    minLength = right - left + 1;
+                    right = end;
+                    left = start;
+                }
+                need.put(s.charAt(left), need.get(left) + 1);
+                total_need++;
+                left++;
+            }
+        }
+        return s.substring(start, end);
+    }
+
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[0]));
+        List<Integer> maxResult = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            pq.add(new int[]{nums[i], i});
+            if(i < k-1) continue;
+
+            while (!pq.isEmpty() && pq.peek()[1] <= i - k) {
+                pq.poll();
+            }
+            maxResult.add(pq.peek()[0]);
+        }
+        int[] result = new int[maxResult.size()];
+        for (int i = 0; i < maxResult.size(); i++) {
+            result[i] = maxResult.get(i);
+        }
+        return result;
+    }
+    public int[] maxSlidingWindowFail(int[] nums, int k) {
+        List<Integer> maxResult = new ArrayList<>();
+        Integer localMax = Integer.MIN_VALUE;
+        Queue<Integer> window = new LinkedList<>();
+
+        for(int i = 0 ; i < k ; i++)
+            window.add(nums[i]);
+
+        localMax = Collections.max(window);
+        maxResult.add(localMax);
+
+        for (int i = k; i < nums.length; i++) {
+            Integer pop = window.poll();
+            window.add(nums[i]);
+            if (pop == localMax) {
+                localMax = Collections.min(window);
+            }
+
+            maxResult.add(localMax);
+        }
+        int[] result = new int[maxResult.size()];
+        for (int i = 0; i < maxResult.size(); i++) {
+            result[i] = maxResult.get(i);
+        }
+        return result;
+    }
+
+    public int hammingDistance(int x, int y) {
+        int result = x ^ y;
+        return Integer.bitCount(result);
+    }
+
     public boolean searchMatrix(int[][] matrix, int target) {
         int row = 0;
         int col = matrix[0].length-1;
