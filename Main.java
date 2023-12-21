@@ -39,6 +39,226 @@ public class Main {
 
         int[] ints = new int[];
         Arrays.stream(ints).max().getAsInt();
+
+        Queue<Integer> q = new LinkedList<>();
+        q.add()
+    }
+    public int solution(int storey) {
+        int answer = 0;
+
+
+
+        int temp = 0;
+        while() {
+            int step = storey % 10;
+            if(step > 5) {
+                storey += 10-step;
+                answer += 10-step;
+            } else if(step < 5) {
+                storey -= step;
+                answer += step;
+            } else if(step == 5) {
+
+            }
+        }
+
+
+        return answer;
+    }
+
+    Map<Integer, List<Integer>> graph = new HashMap<>();
+    int answer = 0;
+    int[] info;
+    public int solution(int[] info, int[][] edges) {
+
+        this.info = info;
+        for (int[] edge : edges) {
+            graph.putIfAbsent(edge[0], new ArrayList<>());
+            graph.get(edge[0]).add(edge[1]);
+        }
+
+        dfs5(0, 0, 0, new ArrayList<Integer>());
+
+        return answer;
+    }
+
+    private void dfs5(int idx, int sheep, int wolves, List<Integer> list) {
+        if(info[idx] == 0)
+            sheep += 1;
+        else
+            wolves += 1;
+
+        if(wolves >= sheep) return ;
+
+        answer = Math.max(answer, sheep);
+
+        List<Integer> next = new ArrayList<>(list);
+        next.remove((Integer) idx);
+        if (graph.get(idx) != null) {
+            next.addAll(graph.get(idx));
+        }
+
+        for (Integer n : next) {
+            dfs5(n, sheep, wolves, next);
+        }
+    }
+    int maxScore = 0;
+    int[] maxInfo = null;
+    public int[] solution(int n, int[] info) {
+        int[] lionInfo = new int[10];
+        cal(info, 0, n, 0, lionInfo);
+
+        return maxInfo;
+    }
+
+    private void cal(int[] info, int idx, int n, int score, int[] lionInfo) {
+        if (idx == 9 || n == 0) {
+            if (score >= maxScore) {
+                maxScore = score;
+                maxInfo = lionInfo;
+                System.out.println(lionInfo.toString());
+                return ;
+            }
+        }
+        // 어치피치보다 한 발 더 많이 쏘기
+        if (n >= info[idx] + 1) {
+            lionInfo[idx] = info[idx] + 1;
+            cal(info, idx + 1, n - (info[idx] + 1), score + 10 - idx, lionInfo);
+        }
+
+        // 어피치보다 점수를 얻지 않고 0발을 쏘기
+        lionInfo[idx] = 0;
+        cal(info, idx + 1, n, score, lionInfo);
+    }
+
+    public int[] solution(int[] fees, String[] records) {
+        Map<String, Integer> recordMap = new HashMap<>();
+        Map<String, Integer> count = new HashMap<>();
+        for (String record : records) {
+            String[] r = record.split(" ");
+            String timeString = r[0];
+            String carNum = r[1];
+
+            int time = StringtoTime(timeString);
+
+            recordMap.put(carNum, time - recordMap.getOrDefault(carNum, 0));
+            count.put(carNum, count.getOrDefault(carNum, 0) + 1);
+        }
+        for (Map.Entry<String, Integer> entry : count.entrySet()) {
+            if (entry.getValue() % 2 == 1) {
+                recordMap.put(entry.getKey(), 23 * 60 + 59 - recordMap.getOrDefault(carNum, 0));
+            }
+        }
+
+        Map<String, Integer> feeMap = new HashMap<>();
+
+        for (Map.Entry<String, Integer> entry : recordMap.entrySet()) {
+            int fee = 0;
+            String carNum = entry.getKey();
+            int time = entry.getValue();
+
+            time -= fees[0];
+            feeMap.put(carNum, fees[1]);
+            if (time > 0) {
+                feeMap.put(carNum, feeMap.get(carNum) + time / fees[2] * fees[3]);
+                if(time % fees[3] > 0)
+                    feeMap.put(carNum, feeMap.get(carNum) + fees[3]);
+            }
+        }
+
+        List<String> keyList = recordMap.keySet().stream().collect(Collectors.toList());
+        Collections.sort(keyList);
+
+        int[] answer = new int[keyList.size()];
+        for (int i = 0; i < keyList.size(); i++) {
+            answer[i] = feeMap.get(keyList.get(i));
+        }
+
+        return answer;
+    }
+
+    private int StringtoTime(String timeString) {
+        String[] split = timeString.split(":");
+        return Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1]);
+    }
+
+    public int solution(int n, int k) {
+        int answer = -1;
+
+        StringBuilder kStringBuilder = new StringBuilder();
+        // n을 k진수로 바꾼다
+        while (n != 0) {
+            kStringBuilder.append(n % k);
+            n /= k;
+        }
+        String kString = kStringBuilder.reverse().toString();
+
+        System.out.println(kString);
+
+        // k진수를 0으로 split한다.
+        String[] kStringSplitByZero = kString.split("0");
+
+        for (String s : kStringSplitByZero) {
+            if (isPrime(s)) {
+                answer++;
+            }
+        }
+
+        // split된 각 숫자들이 소수인지 판별한다.
+        return answer;
+    }
+
+    private boolean isPrime(String s) {
+        int num = Integer.parseInt(s);
+        if(num == 1) return false;
+
+        for (int i = 3; i < Math.sqrt(num); i++) {
+            if(num % i == 0) return false;
+        }
+        return true;
+    }
+
+    public int[] solution(String[] id_list, String[] report, int k) {
+        int[] answer = new int[id_list.length];
+
+        Set<String> reportSet = Arrays.stream(report).collect(Collectors.toSet());
+        List<String> reportList = reportSet.stream().collect(Collectors.toList());
+
+        Map<String, Integer> reportCount = new HashMap<>();
+
+        for (String s : reportList) {
+            String[] r = s.split(" ");
+            String from = r[0];
+            String to = r[1];
+
+            // 유저별 정지 횟수
+            reportCount.put(r[1], reportCount.getOrDefault(r[1], 0) + 1);
+        }
+
+        List<String> stopList = new ArrayList<>();
+        // 정지된 회원을 판단
+        for (Map.Entry<String, Integer> entry : reportCount.entrySet()) {
+            if (entry.getValue() >= k) {
+                stopList.add(entry.getKey());
+            }
+        }
+
+        Map<String, Integer> numbering = new HashMap<>();
+        for (int i = 0; i < id_list.length; i++) {
+            numbering.put(id_list[i], i);
+        }
+
+        // 정지된 회원을 신고한 회원들에게 메일 발송 횟수
+        for (String s : report) {
+            String[] r = s.split(" ");
+            String from = r[0];
+            String to = r[1];
+
+            if (stopList.contains(to)) {
+                answer[numbering.get(from)]++;
+            }
+        }
+        return answer;
     }
 
     public int rob(int[] nums) {
